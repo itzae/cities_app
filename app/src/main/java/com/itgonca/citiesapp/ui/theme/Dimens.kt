@@ -10,6 +10,7 @@ data class Dimens(
     val paddingSmall: Dp = 8.dp,
     val paddingMedium: Dp = 16.dp,
     val paddingLarge: Dp = 24.dp,
+    val cornerRadiusExtraLarge:Dp = 24.dp
 )
 
 internal val LocalDimens = staticCompositionLocalOf { Dimens() }
