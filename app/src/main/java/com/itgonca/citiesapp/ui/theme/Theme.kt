@@ -1,6 +1,5 @@
 package com.itgonca.citiesapp.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -9,35 +8,42 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = LightSkyBlue,
+    onPrimary = Color.Black,
+    secondary = BananaYellow,
+    onSecondary = Color.Black,
+    background = ChineseBlack,
+    onBackground = ChineseWhite,
+    surface = EerieBlack,
+    onSurface = ChineseWhite,
+    error = FireOpal,
+    onError = Color.Black
+
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
+    primary = FrenchBlue,
     onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    secondary = MetallicYellow,
+    onSecondary = Color.Black,
+    background = GhostWhite,
+    onBackground = EerieBlack,
+    onSurface = EerieBlack,
+    error = PersianRed,
+    onError = Color.White
 )
 
 @Composable
 fun CitiesAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    dimens: Dimens = CitiesAppTheme.dimens,
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -50,9 +56,11 @@ fun CitiesAppTheme(
         else -> LightColorScheme
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    CompositionLocalProvider(LocalDimens provides dimens) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }
