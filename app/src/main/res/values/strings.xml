@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Cities App</string>
+    <string name="city_item_favorite_button_cd">Botón de favorito</string>
+    <string name="home_cities_searchbar_placeholder">Buscar ciudad</string>
+    <string name="home_cities_search_icon_cd">Icono de búsqueda</string>
 </resources>
