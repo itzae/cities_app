@@ -18,10 +18,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import com.itgonca.citiesapp.R
 import com.itgonca.citiesapp.domain.model.City
 import com.itgonca.citiesapp.ui.components.CityItem
 import com.itgonca.citiesapp.ui.components.LoadingScreen
+import com.itgonca.citiesapp.ui.navigation.ScreenRoutes
 import com.itgonca.citiesapp.ui.theme.CitiesAppTheme
 
 /**
@@ -29,11 +31,26 @@ import com.itgonca.citiesapp.ui.theme.CitiesAppTheme
  * @param viewModel This is the viewmodel of the home screen
  */
 @Composable
-fun HomeScreenRoute(viewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreenRoute(
+    viewModel: HomeViewModel = hiltViewModel(),
+    navHostController: NavHostController
+) {
     val state by viewModel.homeState.collectAsStateWithLifecycle()
     when {
         state.isLoading -> LoadingScreen()
-        else -> HomeScreen(state = state.cities)
+        else -> HomeScreen(
+            state = state.cities,
+            onShowMap = {
+                navHostController.navigate(
+                    ScreenRoutes.CityMapScreen(
+                        id = it.id,
+                        name = "${it.name},${it.country}",
+                        latitude = it.latitude,
+                        longitude = it.longitude
+                    )
+                )
+            }
+        )
     }
 }
 
@@ -42,14 +59,16 @@ fun HomeScreenRoute(viewModel: HomeViewModel = hiltViewModel()) {
  * @param state This parameter contains the state of the screen.
  */
 @Composable
-fun HomeScreen(state: List<City>) {
-    Scaffold(topBar = {
-        SearchBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(CitiesAppTheme.dimens.paddingMedium)
-        )
-    }) { innerPadding ->
+fun HomeScreen(state: List<City>, onShowMap: (City) -> Unit = {}) {
+    Scaffold(
+        topBar = {
+            SearchBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(CitiesAppTheme.dimens.paddingMedium)
+            )
+        }
+    ) { innerPadding ->
 
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
             items(state, key = { it.id }) {
@@ -61,7 +80,7 @@ fun HomeScreen(state: List<City>) {
                     title = "${it.name},${it.country}",
                     subtitle = "${it.latitude}-${it.longitude}",
                     isFavorite = false,
-                    onItemClick = {},
+                    onItemClick = { onShowMap(it) },
                     onFavorite = {})
             }
         }
