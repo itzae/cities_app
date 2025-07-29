@@ -4,6 +4,7 @@ import com.itgonca.citiesapp.domain.model.City
 import kotlinx.coroutines.flow.Flow
 
 interface CityRepository {
-    suspend fun getCities(): List<City>
+    fun getCities(): Flow<List<City>>
     fun searchCities(query: String): Flow<List<City>>
+    suspend fun updateFavoriteCity(id: Int, isFavorite: Boolean)
 }

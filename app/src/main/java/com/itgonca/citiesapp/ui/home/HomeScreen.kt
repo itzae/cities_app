@@ -1,5 +1,6 @@
 package com.itgonca.citiesapp.ui.home
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,9 +14,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -38,11 +36,14 @@ fun HomeScreenRoute(
     viewModel: HomeViewModel = hiltViewModel(),
     navHostController: NavHostController
 ) {
-    val state by viewModel.homeState.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val query by viewModel.query.collectAsStateWithLifecycle()
+    val cities by viewModel.cities.collectAsStateWithLifecycle()
     when {
-        state.isLoading -> LoadingScreen()
+        isLoading -> LoadingScreen()
         else -> HomeScreen(
-            state = state.cities,
+            query = query,
+            cities = cities,
             onShowMap = {
                 navHostController.navigate(
                     ScreenRoutes.CityMapScreen(
@@ -53,20 +54,24 @@ fun HomeScreenRoute(
                     )
                 )
             },
-            onSearch = {
-                viewModel.onSearch(it)
-            }
+            onSearch = { viewModel.onSearch(it) },
+            onSelectFavorite = { id, isFavorite -> viewModel.onSelectFavorite(id, isFavorite) }
         )
     }
 }
 
 /**
  * This composable is the main screen of the app.
- * @param state This parameter contains the state of the screen.
+ * @param query This parameter contains the text of the search
  */
 @Composable
-fun HomeScreen(state: List<City>, onShowMap: (City) -> Unit = {}, onSearch: (String) -> Unit = {}) {
-    var query by remember { mutableStateOf("") }
+fun HomeScreen(
+    query: String,
+    cities: List<City> = emptyList(),
+    onShowMap: (City) -> Unit = {},
+    onSearch: (String) -> Unit = {},
+    onSelectFavorite: (Int, Boolean) -> Unit = { _, _ -> }
+) {
     Scaffold(
         topBar = {
             SearchBar(
@@ -74,16 +79,16 @@ fun HomeScreen(state: List<City>, onShowMap: (City) -> Unit = {}, onSearch: (Str
                     .fillMaxWidth()
                     .padding(CitiesAppTheme.dimens.paddingMedium),
                 query = query,
-                onQuery = {
-                    query = it
-                    onSearch(it)
-                }
+                onQuery = { onSearch(it) }
             )
         }
     ) { innerPadding ->
-
-        LazyColumn(modifier = Modifier.padding(innerPadding)) {
-            items(state, key = { it.id }) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            items(cities, key = { it.id }) {
                 CityItem(
                     modifier = Modifier.padding(
                         vertical = CitiesAppTheme.dimens.paddingSmall,
@@ -91,9 +96,9 @@ fun HomeScreen(state: List<City>, onShowMap: (City) -> Unit = {}, onSearch: (Str
                     ),
                     title = "${it.name},${it.country}",
                     subtitle = "${it.latitude},${it.longitude}",
-                    isFavorite = false,
+                    isFavorite = it.isFavorite,
                     onItemClick = { onShowMap(it) },
-                    onFavorite = {})
+                    onFavorite = { onSelectFavorite(it.id, !it.isFavorite) })
             }
         }
     }
@@ -128,7 +133,7 @@ private fun SearchBar(
 @Composable
 private fun HomeScreenPreview() {
     CitiesAppTheme {
-        HomeScreen(state = List(10) {
+        HomeScreen(query = "", cities = List(10) {
             City(
                 id = it,
                 "Arcelia",

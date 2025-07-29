@@ -6,6 +6,8 @@ import com.itgonca.citiesapp.data.local.db.entity.toEntity
 import com.itgonca.citiesapp.domain.model.City
 import com.itgonca.citiesapp.domain.repository.CityRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -13,7 +15,7 @@ class CityRepositoryImpl @Inject constructor(
     private val cityApi: CityApi,
     private val cityDao: CityDao
 ) : CityRepository {
-    override suspend fun getCities(): List<City> {
+    override fun getCities(): Flow<List<City>> = flow {
         val result = if (cityDao.getCitiesSize() == 0) {
             val response = cityApi.getCities().asSequence()
                 .map {
@@ -27,11 +29,18 @@ class CityRepositoryImpl @Inject constructor(
                 }
                 .toList()
             cityDao.insertAllCities(response.map { it.toEntity() })
-            cityDao.getAllCities().map { it.toDomain() }
+            cityDao.getAllCities().map { citiesEntity ->
+                citiesEntity.asSequence().map { it.toDomain() }.sortedBy { it.name.lowercase() }
+                    .toList()
+            }
+
         } else {
-            cityDao.getAllCities().map { it.toDomain() }
+            cityDao.getAllCities().map { citiesEntity ->
+                citiesEntity.asSequence().map { it.toDomain() }.sortedBy { it.name.lowercase() }
+                    .toList()
+            }
         }
-        return result
+        emitAll(result)
     }
 
     override fun searchCities(query: String): Flow<List<City>> {
@@ -39,5 +48,9 @@ class CityRepositoryImpl @Inject constructor(
             .map {
                 it.map { entity -> entity.toDomain() }
             }
+    }
+
+    override suspend fun updateFavoriteCity(id: Int, isFavorite: Boolean) {
+        cityDao.updateFavoriteCity(id, isFavorite)
     }
 }

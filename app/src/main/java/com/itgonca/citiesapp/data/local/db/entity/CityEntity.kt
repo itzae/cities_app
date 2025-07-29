@@ -23,7 +23,7 @@ fun City.toEntity() = with(this) {
         country = country,
         latitude = latitude.toString(),
         longitude = longitude.toString(),
-        isFavorite = false
+        isFavorite = isFavorite
     )
 }
 
@@ -33,6 +33,7 @@ fun CityEntity.toDomain() = with(this) {
         name = name,
         country = country,
         latitude = latitude.toDouble(),
-        longitude = longitude.toDouble()
+        longitude = longitude.toDouble(),
+        isFavorite = isFavorite
     )
 }

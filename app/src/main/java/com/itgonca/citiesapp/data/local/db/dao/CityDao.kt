@@ -13,11 +13,14 @@ interface CityDao {
     suspend fun insertAllCities(cities: List<CityEntity>)
 
     @Query("SELECT * FROM cities ORDER BY name ASC")
-    suspend fun getAllCities(): List<CityEntity>
+    fun getAllCities(): Flow<List<CityEntity>>
 
     @Query("SELECT COUNT(rowId) FROM cities")
     suspend fun getCitiesSize(): Int
 
     @Query("SELECT * FROM cities WHERE name LIKE :query ")
     fun searchCitiesByPrefix(query: String): Flow<List<CityEntity>>
+
+    @Query("UPDATE cities SET isFavorite = :isFavorite WHERE rowId = :id ")
+    suspend fun updateFavoriteCity(id: Int, isFavorite: Boolean)
 }
