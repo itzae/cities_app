@@ -13,6 +13,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -49,6 +52,9 @@ fun HomeScreenRoute(
                         longitude = it.longitude
                     )
                 )
+            },
+            onSearch = {
+                viewModel.onSearch(it)
             }
         )
     }
@@ -59,13 +65,19 @@ fun HomeScreenRoute(
  * @param state This parameter contains the state of the screen.
  */
 @Composable
-fun HomeScreen(state: List<City>, onShowMap: (City) -> Unit = {}) {
+fun HomeScreen(state: List<City>, onShowMap: (City) -> Unit = {}, onSearch: (String) -> Unit = {}) {
+    var query by remember { mutableStateOf("") }
     Scaffold(
         topBar = {
             SearchBar(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(CitiesAppTheme.dimens.paddingMedium)
+                    .padding(CitiesAppTheme.dimens.paddingMedium),
+                query = query,
+                onQuery = {
+                    query = it
+                    onSearch(it)
+                }
             )
         }
     ) { innerPadding ->
@@ -78,7 +90,7 @@ fun HomeScreen(state: List<City>, onShowMap: (City) -> Unit = {}) {
                         horizontal = CitiesAppTheme.dimens.paddingMedium
                     ),
                     title = "${it.name},${it.country}",
-                    subtitle = "${it.latitude}-${it.longitude}",
+                    subtitle = "${it.latitude},${it.longitude}",
                     isFavorite = false,
                     onItemClick = { onShowMap(it) },
                     onFavorite = {})
@@ -92,10 +104,14 @@ fun HomeScreen(state: List<City>, onShowMap: (City) -> Unit = {}) {
  * @param modifier This parameter allows you to configure the composable
  */
 @Composable
-private fun SearchBar(modifier: Modifier = Modifier) {
+private fun SearchBar(
+    modifier: Modifier = Modifier,
+    query: String,
+    onQuery: (String) -> Unit = {}
+) {
     OutlinedTextField(
         modifier = modifier,
-        value = "",
+        value = query,
         shape = RoundedCornerShape(CitiesAppTheme.dimens.cornerRadiusExtraLarge),
         leadingIcon = {
             Icon(
@@ -104,7 +120,8 @@ private fun SearchBar(modifier: Modifier = Modifier) {
             )
         },
         placeholder = { Text(text = stringResource(R.string.home_cities_searchbar_placeholder)) },
-        onValueChange = {})
+        onValueChange = onQuery
+    )
 }
 
 @PreviewLightDark
