@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
     kotlin("plugin.serialization") version "1.9.23"
 }
@@ -59,9 +59,15 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
     implementation(libs.maps.compose)
     implementation(libs.navigation.compose)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.paging)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.paging.runtime.ktx)
+    implementation(libs.androidx.paging.compose)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
