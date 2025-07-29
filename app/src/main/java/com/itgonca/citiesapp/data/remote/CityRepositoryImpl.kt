@@ -1,5 +1,9 @@
 package com.itgonca.citiesapp.data.remote
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.itgonca.citiesapp.data.local.db.dao.CityDao
 import com.itgonca.citiesapp.data.local.db.entity.toDomain
 import com.itgonca.citiesapp.data.local.db.entity.toEntity
@@ -15,8 +19,13 @@ class CityRepositoryImpl @Inject constructor(
     private val cityApi: CityApi,
     private val cityDao: CityDao
 ) : CityRepository {
-    override fun getCities(): Flow<List<City>> = flow {
-        val result = if (cityDao.getCitiesSize() == 0) {
+    /**
+     * This method obtains all the cities, performs a check to obtain the cities remotely and insert
+     * them into the database, if there are records the cities are obtained locally
+     * @return a [Flow] with the page [City] object.
+     */
+    override fun getCities(): Flow<PagingData<City>> = flow {
+        if (cityDao.getCitiesSize() == 0) {
             val response = cityApi.getCities().asSequence()
                 .map {
                     City(
@@ -29,27 +38,47 @@ class CityRepositoryImpl @Inject constructor(
                 }
                 .toList()
             cityDao.insertAllCities(response.map { it.toEntity() })
-            cityDao.getAllCities().map { citiesEntity ->
-                citiesEntity.asSequence().map { it.toDomain() }.sortedBy { it.name.lowercase() }
-                    .toList()
-            }
-
+            emitAll(
+                Pager(
+                    config = PagingConfig(pageSize = 50, enablePlaceholders = false),
+                    pagingSourceFactory = { cityDao.getAllCities() })
+                    .flow
+                    .map { pagingData ->
+                        pagingData.map { city -> city.toDomain() }
+                    })
         } else {
-            cityDao.getAllCities().map { citiesEntity ->
-                citiesEntity.asSequence().map { it.toDomain() }.sortedBy { it.name.lowercase() }
-                    .toList()
-            }
+            emitAll(
+                Pager(
+                    config = PagingConfig(pageSize = 50, enablePlaceholders = false),
+                    pagingSourceFactory = { cityDao.getAllCities() })
+                    .flow
+                    .map { pagingData ->
+                        pagingData.map { city -> city.toDomain() }
+                    })
         }
-        emitAll(result)
     }
 
-    override fun searchCities(query: String): Flow<List<City>> {
-        return cityDao.searchCitiesByPrefix("$query%")
-            .map {
-                it.map { entity -> entity.toDomain() }
-            }
+    /**
+     * This method perform an indexed search to get all the results that match the query provided
+     * @param query is the search text
+     * @return a [Flow] with the page [City] object.
+     */
+    override fun searchCities(query: String): Flow<PagingData<City>> = flow {
+        emitAll(
+            Pager(
+                config = PagingConfig(pageSize = 50, enablePlaceholders = false),
+                pagingSourceFactory = { cityDao.searchCitiesByPrefix("$query%") })
+                .flow
+                .map { pagingData ->
+                    pagingData.map { city -> city.toDomain() }
+                })
     }
 
+    /**
+     * This method updates the selected city to mark it as a favorite or not.
+     * @param id is the city id
+     * @param isFavorite is the state of the selected city
+     */
     override suspend fun updateFavoriteCity(id: Int, isFavorite: Boolean) {
         cityDao.updateFavoriteCity(id, isFavorite)
     }

@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -20,16 +19,23 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import com.itgonca.citiesapp.R
 import com.itgonca.citiesapp.domain.model.City
 import com.itgonca.citiesapp.ui.components.CityItem
 import com.itgonca.citiesapp.ui.components.LoadingScreen
 import com.itgonca.citiesapp.ui.navigation.ScreenRoutes
 import com.itgonca.citiesapp.ui.theme.CitiesAppTheme
+import kotlinx.coroutines.flow.flowOf
 
 /**
  * This composable allow you to manage the state and navigation of the [HomeScreen]
  * @param viewModel This is the viewmodel of the home screen
+ * @param navHostController This allows you to navigate the main screen
  */
 @Composable
 fun HomeScreenRoute(
@@ -38,12 +44,12 @@ fun HomeScreenRoute(
 ) {
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val query by viewModel.query.collectAsStateWithLifecycle()
-    val cities by viewModel.cities.collectAsStateWithLifecycle()
+    val citiesLazyItems: LazyPagingItems<City> = viewModel.cities.collectAsLazyPagingItems()
     when {
         isLoading -> LoadingScreen()
         else -> HomeScreen(
             query = query,
-            cities = cities,
+            cities = citiesLazyItems,
             onShowMap = {
                 navHostController.navigate(
                     ScreenRoutes.CityMapScreen(
@@ -63,11 +69,15 @@ fun HomeScreenRoute(
 /**
  * This composable is the main screen of the app.
  * @param query This parameter contains the text of the search
+ * @param cities It is the list of cities paginated for optimal loading within the composable
+ * @param onShowMap Navigate to the screen that shows the map with the location of the city
+ * @param onSearch Update the search text and  perform the city search
+ * @param onSelectFavorite Select a city as a favorite and updated it
  */
 @Composable
 fun HomeScreen(
     query: String,
-    cities: List<City> = emptyList(),
+    cities: LazyPagingItems<City>,
     onShowMap: (City) -> Unit = {},
     onSearch: (String) -> Unit = {},
     onSelectFavorite: (Int, Boolean) -> Unit = { _, _ -> }
@@ -86,19 +96,24 @@ fun HomeScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(innerPadding),
         ) {
-            items(cities, key = { it.id }) {
+            items(
+                cities.itemCount,
+                key = cities.itemKey(City::id),
+                contentType = { cities.itemContentType { "Cities" } }
+            ) { index ->
+                val city = cities[index] ?: return@items
                 CityItem(
                     modifier = Modifier.padding(
                         vertical = CitiesAppTheme.dimens.paddingSmall,
                         horizontal = CitiesAppTheme.dimens.paddingMedium
                     ),
-                    title = "${it.name},${it.country}",
-                    subtitle = "${it.latitude},${it.longitude}",
-                    isFavorite = it.isFavorite,
-                    onItemClick = { onShowMap(it) },
-                    onFavorite = { onSelectFavorite(it.id, !it.isFavorite) })
+                    title = "${city.name},${city.country}",
+                    subtitle = "${city.latitude},${city.longitude}",
+                    isFavorite = city.isFavorite,
+                    onItemClick = { onShowMap(city) },
+                    onFavorite = { onSelectFavorite(city.id, !city.isFavorite) })
             }
         }
     }
@@ -107,6 +122,8 @@ fun HomeScreen(
 /**
  * This composable is the input to search for cities
  * @param modifier This parameter allows you to configure the composable
+ * @param query is the search text
+ * @param onQuery is the action that contains the search text
  */
 @Composable
 private fun SearchBar(
@@ -133,7 +150,7 @@ private fun SearchBar(
 @Composable
 private fun HomeScreenPreview() {
     CitiesAppTheme {
-        HomeScreen(query = "", cities = List(10) {
+        val items = List(10) {
             City(
                 id = it,
                 "Arcelia",
@@ -141,6 +158,8 @@ private fun HomeScreenPreview() {
                 latitude = 10.2340,
                 longitude = -100.9458
             )
-        })
+        }
+        val pagingData = flowOf(PagingData.from(items)).collectAsLazyPagingItems()
+        HomeScreen(query = "", cities = pagingData)
     }
 }
