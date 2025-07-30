@@ -82,4 +82,36 @@ class CityRepositoryImpl @Inject constructor(
     override suspend fun updateFavoriteCity(id: Int, isFavorite: Boolean) {
         cityDao.updateFavoriteCity(id, isFavorite)
     }
+
+    /**
+     * This method obtains the favorite cities
+     * @return a [Flow] with the page [City] object.
+     */
+    override fun getFavoritesCities(): Flow<PagingData<City>> = flow {
+        emitAll(
+            Pager(
+                config = PagingConfig(pageSize = 50, enablePlaceholders = false),
+                pagingSourceFactory = { cityDao.getFavoritesCities() })
+                .flow
+                .map { pagingData ->
+                    pagingData.map { city -> city.toDomain() }
+                })
+    }
+
+    /**
+     * This method perform an indexed search to get all the favorites cities results that match the query provided
+     * @param query is the search text
+     * @return a [Flow] with the page [City] object.
+     */
+    override fun searchFavorites(query: String): Flow<PagingData<City>> = flow {
+        emitAll(
+            Pager(
+                config = PagingConfig(pageSize = 50, enablePlaceholders = false),
+                pagingSourceFactory = { cityDao.searchFavoritesCities("$query%") })
+                .flow
+                .map { pagingData ->
+                    pagingData.map { city -> city.toDomain() }
+                })
+    }
+
 }

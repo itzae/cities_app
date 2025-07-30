@@ -5,4 +5,5 @@
     <string name="home_cities_search_icon_cd">Icono de búsqueda</string>
     <string name="top_app_bar_navigation_icon_cd">Botón de navegación de barra superior</string>
     <string name="city_map_detail_icon_cd">Detalle de ciudad</string>
+    <string name="home_scree_favorites_button_cd">Mostrar lista de favoritos</string>
 </resources>
