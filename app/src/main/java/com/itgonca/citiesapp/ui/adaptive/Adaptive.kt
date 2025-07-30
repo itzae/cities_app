@@ -1,4 +1,4 @@
-package com.itgonca.citiesapp.ui.adaptative
+package com.itgonca.citiesapp.ui.adaptive
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,7 +24,7 @@ import com.itgonca.citiesapp.ui.theme.CitiesAppTheme
  * @param viewModel is the viewmodel of the home screen
  */
 @Composable
-fun AdaptativeScreen(viewModel: HomeViewModel = hiltViewModel()) {
+fun AdaptiveScreen(viewModel: HomeViewModel = hiltViewModel()) {
     val cities = viewModel.cities.collectAsLazyPagingItems()
     val query by viewModel.query.collectAsStateWithLifecycle()
     var citySelected by remember { mutableStateOf<City?>(null) }
@@ -50,6 +50,6 @@ fun AdaptativeScreen(viewModel: HomeViewModel = hiltViewModel()) {
 
 @Preview
 @Composable
-private fun AdaptativeScreenPreview() {
-    CitiesAppTheme { AdaptativeScreen() }
+private fun AdaptiveScreenPreview() {
+    CitiesAppTheme { AdaptiveScreen() }
 }
