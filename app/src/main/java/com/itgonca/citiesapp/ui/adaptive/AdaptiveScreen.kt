@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.itgonca.citiesapp.domain.model.City
 import com.itgonca.citiesapp.ui.home.HomeScreen
@@ -28,14 +29,20 @@ fun AdaptiveScreen(viewModel: HomeViewModel = hiltViewModel()) {
     val cities = viewModel.cities.collectAsLazyPagingItems()
     val query by viewModel.query.collectAsStateWithLifecycle()
     var citySelected by remember { mutableStateOf<City?>(null) }
-
+    val favoritesCitiesLazyItems: LazyPagingItems<City> =
+        viewModel.favoriteCities.collectAsLazyPagingItems()
+    val isShowFavorites by viewModel.isShowFavorites.collectAsStateWithLifecycle()
     Row(modifier = Modifier.fillMaxSize()) {
         HomeScreen(
             modifier = Modifier.weight(1f),
             query = query,
-            cities = cities,
+            cities = if (isShowFavorites) favoritesCitiesLazyItems else cities,
+            isShowFavorite = isShowFavorites,
             onShowMap = { citySelected = it },
-            onSearch = { viewModel.onSearch(it) })
+            onSearch = { viewModel.onSearch(it) },
+            onSelectFavorite = { id, isFavorite -> viewModel.onSelectFavorite(id, isFavorite) },
+            onShowFavorites = { viewModel.onShowFavorites() }
+        )
         citySelected?.let {
             CityMapScreen(
                 modifier = Modifier.weight(1f),

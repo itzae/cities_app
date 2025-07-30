@@ -40,13 +40,13 @@ fun CityMapScreen(
     longitude: Double,
     onBack: () -> Unit = {}
 ) {
-    val location =  LatLng(latitude, longitude)
+    val location = LatLng(latitude, longitude)
     val cameraPositionState = rememberCameraPositionState {
-        
+
     }
     LaunchedEffect(location) {
         cameraPositionState.animate(
-            update = CameraUpdateFactory.newLatLngZoom(location,10f),
+            update = CameraUpdateFactory.newLatLngZoom(location, 10f),
             durationMs = 1000
         )
     }

@@ -1,18 +1,23 @@
 package com.itgonca.citiesapp.ui.home
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -45,11 +50,14 @@ fun HomeScreenRoute(
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val query by viewModel.query.collectAsStateWithLifecycle()
     val citiesLazyItems: LazyPagingItems<City> = viewModel.cities.collectAsLazyPagingItems()
+    val favoritesCitiesLazyItems: LazyPagingItems<City> = viewModel.favoriteCities.collectAsLazyPagingItems()
+    val isShowFavorites by viewModel.isShowFavorites.collectAsStateWithLifecycle()
     when {
         isLoading -> LoadingScreen()
         else -> HomeScreen(
             query = query,
-            cities = citiesLazyItems,
+            cities = if (isShowFavorites) favoritesCitiesLazyItems else citiesLazyItems,
+            isShowFavorite = isShowFavorites,
             onShowMap = {
                 navHostController.navigate(
                     ScreenRoutes.CityMapScreen(
@@ -61,7 +69,8 @@ fun HomeScreenRoute(
                 )
             },
             onSearch = { viewModel.onSearch(it) },
-            onSelectFavorite = { id, isFavorite -> viewModel.onSelectFavorite(id, isFavorite) }
+            onSelectFavorite = { id, isFavorite -> viewModel.onSelectFavorite(id, isFavorite) },
+            onShowFavorites = { viewModel.onShowFavorites() }
         )
     }
 }
@@ -79,9 +88,11 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     query: String,
     cities: LazyPagingItems<City>,
+    isShowFavorite: Boolean = false,
     onShowMap: (City) -> Unit = {},
     onSearch: (String) -> Unit = {},
-    onSelectFavorite: (Int, Boolean) -> Unit = { _, _ -> }
+    onSelectFavorite: (Int, Boolean) -> Unit = { _, _ -> },
+    onShowFavorites: (Boolean) -> Unit = {}
 ) {
     Scaffold(
         modifier = modifier,
@@ -89,9 +100,11 @@ fun HomeScreen(
             SearchBar(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(CitiesAppTheme.dimens.paddingMedium),
+                    .padding(CitiesAppTheme.dimens.paddingSmall),
                 query = query,
-                onQuery = { onSearch(it) }
+                isFavoriteSelected = isShowFavorite,
+                onQuery = { onSearch(it) },
+                onShowFavorites = { onShowFavorites(true) }
             )
         }
     ) { innerPadding ->
@@ -131,21 +144,31 @@ fun HomeScreen(
 private fun SearchBar(
     modifier: Modifier = Modifier,
     query: String,
+    isFavoriteSelected: Boolean = false,
+    onShowFavorites: () -> Unit,
     onQuery: (String) -> Unit = {}
 ) {
-    OutlinedTextField(
-        modifier = modifier,
-        value = query,
-        shape = RoundedCornerShape(CitiesAppTheme.dimens.cornerRadiusExtraLarge),
-        leadingIcon = {
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+        OutlinedTextField(
+            modifier = modifier.weight(1f),
+            value = query,
+            shape = RoundedCornerShape(CitiesAppTheme.dimens.cornerRadiusExtraLarge),
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = stringResource(R.string.home_cities_search_icon_cd)
+                )
+            },
+            placeholder = { Text(text = stringResource(R.string.home_cities_searchbar_placeholder)) },
+            onValueChange = onQuery
+        )
+        IconButton(onClick = onShowFavorites) {
             Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = stringResource(R.string.home_cities_search_icon_cd)
+                imageVector = if (isFavoriteSelected) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                contentDescription = stringResource(R.string.home_scree_favorites_button_cd)
             )
-        },
-        placeholder = { Text(text = stringResource(R.string.home_cities_searchbar_placeholder)) },
-        onValueChange = onQuery
-    )
+        }
+    }
 }
 
 @PreviewLightDark

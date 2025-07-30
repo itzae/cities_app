@@ -9,12 +9,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val cityRepository: CityRepository) : ViewModel() {
 
@@ -28,9 +30,12 @@ class HomeViewModel @Inject constructor(private val cityRepository: CityReposito
     val query: StateFlow<String>
         get() = _query.asStateFlow()
 
+    private val _isShowFavorites = MutableStateFlow(false)
+    val isShowFavorites: StateFlow<Boolean>
+        get() = _isShowFavorites.asStateFlow()
+
     /*Stateflow to get the cities as soon as the composable subscribes, likewise tracks query changes
     to perform the search*/
-    @OptIn(ExperimentalCoroutinesApi::class)
     val cities = query
         .flatMapLatest { text ->
             if (text.isBlank())
@@ -41,12 +46,36 @@ class HomeViewModel @Inject constructor(private val cityRepository: CityReposito
         .onEach { _isLoading.update { false } }
         .cachedIn(viewModelScope)
 
+    /*
+    Stateflow to get the favorite cities when the user tap on favorite button, likewise tracks query
+    changes to perform the search
+    */
+    val favoriteCities = isShowFavorites
+        .combine(query) { _, text ->
+            text
+        }
+        .flatMapLatest { text ->
+            if (text.isBlank())
+                cityRepository.getFavoritesCities()
+            else
+                cityRepository.searchFavorites(text)
+
+        }
+        .cachedIn(viewModelScope)
+
     /**
      * This method allows you to updated the status of the search text
      * @param query is the new search text
      */
     fun onSearch(query: String) {
         _query.update { query }
+    }
+
+    /**
+     * This method updates the list of cities to favorite cities
+     */
+    fun onShowFavorites() {
+        _isShowFavorites.update { !it }
     }
 
     /**
