@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.adaptive.android)
     ksp(libs.hilt.compiler)
     implementation(libs.maps.compose)
     implementation(libs.navigation.compose)

@@ -10,11 +10,11 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
@@ -24,13 +24,35 @@ import com.itgonca.citiesapp.R
 import com.itgonca.citiesapp.ui.components.TopAppBarCustom
 import com.itgonca.citiesapp.ui.theme.CitiesAppTheme
 
+/**
+ * This composable displays a map with the location of the selected city
+ * @param modifier allows screen configuration using attributes
+ * @param name is the name of selected city
+ * @param latitude is the latitude of selected city
+ * @param longitude is the longitude of selected city
+ * @param onBack is the action for navigation backwards
+ */
 @Composable
-fun CityMapScreen(name: String, latitude: Double, longitude: Double, onBack: () -> Unit = {}) {
-    val location = remember { LatLng(latitude, longitude) }
+fun CityMapScreen(
+    modifier: Modifier = Modifier,
+    name: String,
+    latitude: Double,
+    longitude: Double,
+    onBack: () -> Unit = {}
+) {
+    val location =  LatLng(latitude, longitude)
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(location, 10f)
+        
     }
+    LaunchedEffect(location) {
+        cameraPositionState.animate(
+            update = CameraUpdateFactory.newLatLngZoom(location,10f),
+            durationMs = 1000
+        )
+    }
+
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBarCustom(
                 title = name,
