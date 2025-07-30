@@ -76,6 +76,7 @@ fun HomeScreenRoute(
  */
 @Composable
 fun HomeScreen(
+    modifier: Modifier = Modifier,
     query: String,
     cities: LazyPagingItems<City>,
     onShowMap: (City) -> Unit = {},
@@ -83,6 +84,7 @@ fun HomeScreen(
     onSelectFavorite: (Int, Boolean) -> Unit = { _, _ -> }
 ) {
     Scaffold(
+        modifier = modifier,
         topBar = {
             SearchBar(
                 modifier = Modifier

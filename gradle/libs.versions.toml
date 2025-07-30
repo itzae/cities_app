@@ -18,6 +18,9 @@ hiltNavigationCompose = "1.2.0"
 navigationCompose = "2.9.2"
 roomRuntime = "2.7.2"
 kspVersion = "2.0.21-1.0.27"
+adaptive = "1.1.2"
+adaptiveAndroid = "1.1.0"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingCompose" }
@@ -46,6 +49,7 @@ hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hil
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+androidx-adaptive-android = { group = "androidx.compose.material3.adaptive", name = "adaptive-android", version.ref = "adaptiveAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
