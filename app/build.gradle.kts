@@ -1,3 +1,6 @@
+import java.util.Properties
+import kotlin.apply
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -8,6 +11,7 @@ plugins {
 }
 
 android {
+
     namespace = "com.itgonca.citiesapp"
     compileSdk = 35
 
@@ -20,6 +24,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String","BASE_URL","\"https://gist.githubusercontent.com/\"")
+        buildConfigField("String","WEATHER_BASE_URL","\"https://weather-api167.p.rapidapi.com/api/\"")
+        buildConfigField("String","API_KEY","\"${getLocalProperty("API_KEY")}\"")
     }
 
     buildTypes {
@@ -84,3 +90,14 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
+
+fun Project.getLocalProperty(key: String): String? {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (!localPropertiesFile.exists()) return null
+
+    val properties = Properties().apply { load(localPropertiesFile.inputStream()) }
+
+    return properties.getProperty(key)
+}
+
+

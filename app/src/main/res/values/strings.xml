@@ -17,4 +17,16 @@
     <string name="city_detail_screen_area_code_value">55</string>
     <string name="city_detail_screen_weather_label">Clima</string>
     <string name="city_detail_screen_weather_value">Bosque templado</string>
+    <string name="city_detail_loader_screen_message">Cargando información del clima.</string>
+    <string name="city_detail_screen_error_label">Ocurrió un error al obtener la información</string>
+    <string name="city_detail_screen_icon_weather_cd">Icono del estado del clima</string>
+    <string name="city_detail_screen_humidity_label">Humedad</string>
+    <string name="city_detail_screen_temp_feel_label">Sensación termica</string>
+    <string name="city_detail_screen_temp_min_label">Temperatura min.</string>
+    <string name="city_detail_screen_temp_max_label">Temperatura max.</string>
+    <string name="city_detail_screen_wind_label">Viento</string>
+    <string name="city_detail_screen_wind_direction_label">Direccion</string>
+    <string name="city_detail_screen_visibility_label">Visibilidad</string>
+    <string name="city_detail_screen_clouds_label">Nubosidad</string>
+    <string name="home_screen_loader_message">Obteniendo lista de ciudades, por favor espera.</string>
 </resources>

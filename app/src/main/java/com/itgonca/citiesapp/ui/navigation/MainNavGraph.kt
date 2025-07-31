@@ -9,7 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.itgonca.citiesapp.ui.detail.CityDetailScreen
+import com.itgonca.citiesapp.ui.detail.CityDetailScreenRoute
 import com.itgonca.citiesapp.ui.home.HomeScreenRoute
 import com.itgonca.citiesapp.ui.map.CityMapScreen
 
@@ -29,10 +29,24 @@ fun MainNavGraph(navHostController: NavHostController = rememberNavController())
                     name = args.name,
                     latitude = args.latitude,
                     longitude = args.longitude,
-                    onShowDetail = { navHostController.navigate(ScreenRoutes.CityDetailScreen) },
+                    onShowDetail = {
+                        navHostController.navigate(
+                            ScreenRoutes.CityDetailScreen(
+                                latitude = args.latitude,
+                                longitude = args.longitude
+                            )
+                        )
+                    },
                     onBack = { navHostController.navigateUp() })
             }
-            composable<ScreenRoutes.CityDetailScreen> { CityDetailScreen(onBack = { navHostController.navigateUp() }) }
+            composable<ScreenRoutes.CityDetailScreen> {
+                val args: ScreenRoutes.CityDetailScreen = it.toRoute()
+                CityDetailScreenRoute(
+                    navHostController = navHostController,
+                    latitude = args.latitude,
+                    longitude = args.longitude
+                )
+            }
         }
     }
 

@@ -55,7 +55,11 @@ fun HomeScreenRoute(
         viewModel.favoriteCities.collectAsLazyPagingItems()
     val isShowFavorites by viewModel.isShowFavorites.collectAsStateWithLifecycle()
     when {
-        isLoading -> LoadingScreen()
+        isLoading -> LoadingScreen(
+            modifier = Modifier.fillMaxSize(),
+            message = stringResource(R.string.home_screen_loader_message)
+        )
+
         else -> HomeScreen(
             query = query,
             cities = if (isShowFavorites) favoritesCitiesLazyItems else citiesLazyItems,

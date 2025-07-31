@@ -6,6 +6,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.itgonca.citiesapp.ui.theme.CitiesAppTheme
 
@@ -24,6 +25,8 @@ fun CardInformation(modifier: Modifier = Modifier, label: String, information: S
                 .padding(horizontal = CitiesAppTheme.dimens.paddingSmall)
                 .padding(bottom = CitiesAppTheme.dimens.paddingSmall),
             text = information,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.titleMedium
         )
     }

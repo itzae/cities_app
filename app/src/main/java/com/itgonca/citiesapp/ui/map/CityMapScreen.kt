@@ -62,13 +62,12 @@ fun CityMapScreen(
             )
         },
         floatingActionButton = {
-            if (latitude == 19.428471 && longitude == -99.127663)
-                FloatingActionButton(onClick = onShowDetail) {
-                    Icon(
-                        imageVector = Icons.Default.Info,
-                        contentDescription = stringResource(R.string.city_map_detail_icon_cd)
-                    )
-                }
+            FloatingActionButton(onClick = onShowDetail) {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = stringResource(R.string.city_map_detail_icon_cd)
+                )
+            }
         },
         floatingActionButtonPosition = FabPosition.Start
     ) { innerPadding ->
