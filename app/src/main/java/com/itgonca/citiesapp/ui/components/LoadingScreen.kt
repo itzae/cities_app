@@ -2,7 +2,6 @@ package com.itgonca.citiesapp.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,7 +21,7 @@ import com.itgonca.citiesapp.ui.theme.CitiesAppTheme
  * This composable allows you to display a loader
  */
 @Composable
-fun LoadingScreen() {
+fun LoadingScreen(modifier: Modifier= Modifier, message:String) {
     val composition = rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
     val progress by animateLottieCompositionAsState(
         composition = composition.value,
@@ -30,14 +29,14 @@ fun LoadingScreen() {
     )
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LottieAnimation(composition = composition.value, progress = { progress })
         Text(
             modifier = Modifier.padding(CitiesAppTheme.dimens.paddingMedium),
-            text = "Obteniendo lista de ciudades, por favor espera.",
+            text = message,
             style = MaterialTheme.typography.titleSmall
         )
     }

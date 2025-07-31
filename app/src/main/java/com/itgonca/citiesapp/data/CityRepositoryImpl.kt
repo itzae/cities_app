@@ -8,7 +8,10 @@ import com.itgonca.citiesapp.data.local.db.dao.CityDao
 import com.itgonca.citiesapp.data.local.db.entity.toDomain
 import com.itgonca.citiesapp.data.local.db.entity.toEntity
 import com.itgonca.citiesapp.data.remote.CityApi
+import com.itgonca.citiesapp.data.remote.WeatherApi
+import com.itgonca.citiesapp.data.remote.toDomain
 import com.itgonca.citiesapp.domain.model.City
+import com.itgonca.citiesapp.domain.model.CityWeather
 import com.itgonca.citiesapp.domain.repository.CityRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
@@ -18,6 +21,7 @@ import javax.inject.Inject
 
 class CityRepositoryImpl @Inject constructor(
     private val cityApi: CityApi,
+    private val weatherApi: WeatherApi,
     private val cityDao: CityDao
 ) : CityRepository {
     /**
@@ -115,4 +119,13 @@ class CityRepositoryImpl @Inject constructor(
                 })
     }
 
+    /**
+     * This function makes the call to the API to obtain the weather information.
+     * @param latitude of the city
+     * @param longitude of the city
+     */
+    override suspend fun getCityWeather(
+        latitude: Double,
+        longitude: Double
+    ): CityWeather = weatherApi.getWeatherByLocation(long = longitude, lat = latitude).toDomain()
 }

@@ -38,6 +38,7 @@ fun CityMapScreen(
     name: String,
     latitude: Double,
     longitude: Double,
+    onShowDetail: () -> Unit = {},
     onBack: () -> Unit = {}
 ) {
     val location = LatLng(latitude, longitude)
@@ -61,7 +62,7 @@ fun CityMapScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {}) {
+            FloatingActionButton(onClick = onShowDetail) {
                 Icon(
                     imageVector = Icons.Default.Info,
                     contentDescription = stringResource(R.string.city_map_detail_icon_cd)

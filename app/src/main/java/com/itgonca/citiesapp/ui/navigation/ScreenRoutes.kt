@@ -13,4 +13,7 @@ sealed interface ScreenRoutes {
         val latitude: Double,
         val longitude: Double
     ) : ScreenRoutes
+
+    @Serializable
+    data class CityDetailScreen(val latitude: Double,val longitude: Double) : ScreenRoutes
 }
