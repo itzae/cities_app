@@ -1,6 +1,6 @@
 package com.itgonca.citiesapp.di
 
-import com.itgonca.citiesapp.data.remote.CityRepositoryImpl
+import com.itgonca.citiesapp.data.CityRepositoryImpl
 import com.itgonca.citiesapp.domain.repository.CityRepository
 import dagger.Binds
 import dagger.Module

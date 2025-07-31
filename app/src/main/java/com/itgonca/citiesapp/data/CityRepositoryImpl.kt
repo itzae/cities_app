@@ -1,4 +1,4 @@
-package com.itgonca.citiesapp.data.remote
+package com.itgonca.citiesapp.data
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -7,6 +7,7 @@ import androidx.paging.map
 import com.itgonca.citiesapp.data.local.db.dao.CityDao
 import com.itgonca.citiesapp.data.local.db.entity.toDomain
 import com.itgonca.citiesapp.data.local.db.entity.toEntity
+import com.itgonca.citiesapp.data.remote.CityApi
 import com.itgonca.citiesapp.domain.model.City
 import com.itgonca.citiesapp.domain.repository.CityRepository
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +23,7 @@ class CityRepositoryImpl @Inject constructor(
     /**
      * This method obtains all the cities, performs a check to obtain the cities remotely and insert
      * them into the database, if there are records the cities are obtained locally
-     * @return a [Flow] with the page [City] object.
+     * @return a [kotlinx.coroutines.flow.Flow] with the page [com.itgonca.citiesapp.domain.model.City] object.
      */
     override fun getCities(): Flow<PagingData<City>> = flow {
         if (cityDao.getCitiesSize() == 0) {

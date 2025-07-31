@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.itgonca.citiesapp.R
@@ -24,6 +25,7 @@ import com.itgonca.citiesapp.ui.theme.CitiesAppTheme
 @Composable
 fun CityItem(
     modifier: Modifier = Modifier,
+    id: Int = 0,
     title: String,
     subtitle: String,
     isFavorite: Boolean,
@@ -42,7 +44,10 @@ fun CityItem(
                 Text(text = title, style = MaterialTheme.typography.titleSmall)
                 Text(text = subtitle, style = MaterialTheme.typography.bodySmall)
             }
-            IconButton(onClick = onFavorite) {
+            IconButton(
+                modifier = Modifier.testTag("favorite_city_button_$id"),
+                onClick = onFavorite
+            ) {
                 Icon(
                     imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                     contentDescription = stringResource(R.string.city_item_favorite_button_cd)

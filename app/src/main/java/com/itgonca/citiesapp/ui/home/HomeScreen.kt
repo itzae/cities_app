@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -50,7 +51,8 @@ fun HomeScreenRoute(
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val query by viewModel.query.collectAsStateWithLifecycle()
     val citiesLazyItems: LazyPagingItems<City> = viewModel.cities.collectAsLazyPagingItems()
-    val favoritesCitiesLazyItems: LazyPagingItems<City> = viewModel.favoriteCities.collectAsLazyPagingItems()
+    val favoritesCitiesLazyItems: LazyPagingItems<City> =
+        viewModel.favoriteCities.collectAsLazyPagingItems()
     val isShowFavorites by viewModel.isShowFavorites.collectAsStateWithLifecycle()
     when {
         isLoading -> LoadingScreen()
@@ -120,10 +122,13 @@ fun HomeScreen(
             ) { index ->
                 val city = cities[index] ?: return@items
                 CityItem(
-                    modifier = Modifier.padding(
-                        vertical = CitiesAppTheme.dimens.paddingSmall,
-                        horizontal = CitiesAppTheme.dimens.paddingMedium
-                    ),
+                    modifier = Modifier
+                        .padding(
+                            vertical = CitiesAppTheme.dimens.paddingSmall,
+                            horizontal = CitiesAppTheme.dimens.paddingMedium
+                        )
+                        .testTag("city_card_${city.id}"),
+                    id = city.id,
                     title = "${city.name},${city.country}",
                     subtitle = "${city.latitude},${city.longitude}",
                     isFavorite = city.isFavorite,
@@ -150,7 +155,9 @@ private fun SearchBar(
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         OutlinedTextField(
-            modifier = modifier.weight(1f),
+            modifier = modifier
+                .weight(1f)
+                .testTag("search_field"),
             value = query,
             shape = RoundedCornerShape(CitiesAppTheme.dimens.cornerRadiusExtraLarge),
             leadingIcon = {
@@ -162,7 +169,7 @@ private fun SearchBar(
             placeholder = { Text(text = stringResource(R.string.home_cities_searchbar_placeholder)) },
             onValueChange = onQuery
         )
-        IconButton(onClick = onShowFavorites) {
+        IconButton(modifier = Modifier.testTag("favorite_button"), onClick = onShowFavorites) {
             Icon(
                 imageVector = if (isFavoriteSelected) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                 contentDescription = stringResource(R.string.home_scree_favorites_button_cd)
