@@ -6,4 +6,15 @@
     <string name="top_app_bar_navigation_icon_cd">Botón de navegación de barra superior</string>
     <string name="city_map_detail_icon_cd">Detalle de ciudad</string>
     <string name="home_scree_favorites_button_cd">Mostrar lista de favoritos</string>
+    <string name="city_detail_screen_description">Ciudad de México es la densamente poblada capital de México que se encuentra a gran altura. Es famosa por su Templo Mayor (un templo azteca del siglo XIII), la Catedral Metropolitana de México, de estilo barroco, de los conquistadores españoles y el Palacio Nacional, que alberga murales históricos de Diego Rivera. Todos estos hitos se ubican en torno a la Plaza de la Constitución, la enorme plaza principal conocida también como el Zócalo.</string>
+    <string name="city_detail_screen_elevation_label">Elevación</string>
+    <string name="city_detail_screen_elevation_value">2.240 m</string>
+    <string name="city_detail_screen_population_label">Población</string>
+    <string name="city_detail_screen_population_value">9,209,944</string>
+    <string name="city_detail_screen_zip_label">Código postal</string>
+    <string name="city_detail_screen_zip_value">01000–16999</string>
+    <string name="city_detail_screen_area_code_label">Clave lada</string>
+    <string name="city_detail_screen_area_code_value">55</string>
+    <string name="city_detail_screen_weather_label">Clima</string>
+    <string name="city_detail_screen_weather_value">Bosque templado</string>
 </resources>

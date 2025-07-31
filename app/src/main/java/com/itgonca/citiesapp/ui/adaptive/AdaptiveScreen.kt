@@ -14,6 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.itgonca.citiesapp.domain.model.City
+import com.itgonca.citiesapp.ui.detail.CityDetailScreen
 import com.itgonca.citiesapp.ui.home.HomeScreen
 import com.itgonca.citiesapp.ui.home.HomeViewModel
 import com.itgonca.citiesapp.ui.map.CityMapScreen
@@ -32,26 +33,33 @@ fun AdaptiveScreen(viewModel: HomeViewModel = hiltViewModel()) {
     val favoritesCitiesLazyItems: LazyPagingItems<City> =
         viewModel.favoriteCities.collectAsLazyPagingItems()
     val isShowFavorites by viewModel.isShowFavorites.collectAsStateWithLifecycle()
+    var isShowDetail by remember { mutableStateOf(false) }
     Row(modifier = Modifier.fillMaxSize()) {
-        HomeScreen(
-            modifier = Modifier.weight(1f),
-            query = query,
-            cities = if (isShowFavorites) favoritesCitiesLazyItems else cities,
-            isShowFavorite = isShowFavorites,
-            onShowMap = { citySelected = it },
-            onSearch = { viewModel.onSearch(it) },
-            onSelectFavorite = { id, isFavorite -> viewModel.onSelectFavorite(id, isFavorite) },
-            onShowFavorites = { viewModel.onShowFavorites() }
-        )
+        if (!isShowDetail) {
+            HomeScreen(
+                modifier = Modifier.weight(1f),
+                query = query,
+                cities = if (isShowFavorites) favoritesCitiesLazyItems else cities,
+                isShowFavorite = isShowFavorites,
+                onShowMap = { citySelected = it },
+                onSearch = { viewModel.onSearch(it) },
+                onSelectFavorite = { id, isFavorite -> viewModel.onSelectFavorite(id, isFavorite) },
+                onShowFavorites = { viewModel.onShowFavorites() }
+            )
+        }
         citySelected?.let {
             CityMapScreen(
                 modifier = Modifier.weight(1f),
                 name = "${it.name},${it.country}",
                 latitude = it.latitude,
                 longitude = it.longitude,
+                onShowDetail = { isShowDetail = true },
                 onBack = { if (citySelected != null) citySelected = null }
             )
         }
+
+        if (isShowDetail)
+            CityDetailScreen(modifier = Modifier.weight(1f),onBack = { isShowDetail = false })
     }
 }
 
