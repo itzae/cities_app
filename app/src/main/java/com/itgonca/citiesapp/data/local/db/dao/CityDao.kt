@@ -24,7 +24,7 @@ interface CityDao {
     @Query("UPDATE cities SET isFavorite = :isFavorite WHERE rowId = :id ")
     suspend fun updateFavoriteCity(id: Int, isFavorite: Boolean)
 
-    @Query("SELECT * FROM cities WHERE isFavorite = 1")
+    @Query("SELECT * FROM cities WHERE isFavorite = 1 ORDER BY name ASC")
     fun getFavoritesCities(): PagingSource<Int, CityEntity>
 
     @Query("SELECT * FROM cities WHERE name LIKE :query AND isFavorite = 1")
