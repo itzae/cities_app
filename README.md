@@ -114,11 +114,14 @@ La aplicación sigue los principios de Clean Architecture:
 
     Asegúrate de tener instalada la última versión de Android Studio.
 
-3. **Sincronizar Dependencias:**
+3. **Agregar la API key en el archivo local.properties**
+   API_KEY = {API_KEY}
+   
+4. **Sincronizar Dependencias:**
 
    El proyecto utiliza Gradle para la gestión de dependencias. Al abrir el proyecto, Android Studio descargará automáticamente las librerías necesarias.
 
-4. **Ejecutar la Aplicación:**
+5. **Ejecutar la Aplicación:**
 
   Conecta un dispositivo Android o inicia un emulador.
   Haz clic en "Run" para compilar y ejecutar la aplicación.
