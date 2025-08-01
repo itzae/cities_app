@@ -89,6 +89,7 @@ dependencies {
     testImplementation(libs.truth)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    testImplementation("app.cash.turbine:turbine:1.2.1")
 }
 
 fun Project.getLocalProperty(key: String): String? {

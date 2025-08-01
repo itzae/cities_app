@@ -70,15 +70,15 @@ data class WeatherResponse(
         @SerializedName("sea_level_pressure")
         val seaLevelPressure: Double,
         @SerializedName("temprature")
-        val temprature: Double,
+        val temperature: Double,
         @SerializedName("temprature_feels_like")
-        val tempratureFeelsLike: Double,
+        val temperatureFeelsLike: Double,
         @SerializedName("temprature_max")
-        val tempratureMax: Double,
+        val temperatureMax: Double,
         @SerializedName("temprature_min")
-        val tempratureMin: Double,
+        val temperatureMin: Double,
         @SerializedName("temprature_unit")
-        val tempratureUnit: String
+        val temperatureUnit: String
     )
 
     data class Rain(
@@ -129,7 +129,7 @@ data class WeatherResponse(
         @SerializedName("direction")
         val direction: String,
         @SerializedName("gust_speed")
-        val gustSpeed: Double,
+        val gustSpeed: Double? = null,
         @SerializedName("speed")
         val speed: Double,
         @SerializedName("speed_unit")
@@ -144,11 +144,11 @@ fun WeatherResponse.toDomain() = with(this) {
         weather = CityWeather.Weather(
             description = weather.first().description,
             iconWeather = weather.first().icon,
-            temperature = main.temprature,
-            temperatureFeelLike = main.tempratureFeelsLike,
-            humidity = main.temprature,
-            tempMin = main.tempratureMin,
-            tempMax = main.tempratureMax,
+            temperature = main.temperature,
+            temperatureFeelLike = main.temperatureFeelsLike,
+            humidity = main.humidity,
+            tempMin = main.temperatureMin,
+            tempMax = main.temperatureMax,
             wind = wind.speed,
             windDirection = wind.direction,
             visibility = visibilityDistance,

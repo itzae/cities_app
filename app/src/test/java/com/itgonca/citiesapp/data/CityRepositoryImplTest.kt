@@ -4,11 +4,15 @@ import androidx.paging.testing.asSnapshot
 import com.google.common.truth.Truth.assertThat
 import com.itgonca.citiesapp.data.local.db.dao.CityDao
 import com.itgonca.citiesapp.data.remote.CityApi
+import com.itgonca.citiesapp.data.remote.WeatherApi
 import com.itgonca.citiesapp.domain.repository.CityRepository
 import com.itgonca.citiesapp.testUtil.cities
 import com.itgonca.citiesapp.testUtil.citiesEntity
 import com.itgonca.citiesapp.testUtil.fake.FakeCityApi
 import com.itgonca.citiesapp.testUtil.fake.FakeCityDao
+import com.itgonca.citiesapp.testUtil.fake.FakeWeatherApi
+import com.itgonca.citiesapp.testUtil.weatherResponse
+import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -16,6 +20,7 @@ import java.io.IOException
 
 class CityRepositoryImplTest {
     private lateinit var cityApi: CityApi
+    private lateinit var weatherApi: WeatherApi
     private lateinit var cityDao: CityDao
     private lateinit var cityRepository: CityRepository
 
@@ -23,7 +28,9 @@ class CityRepositoryImplTest {
     fun setup() {
         cityApi = FakeCityApi()
         cityDao = FakeCityDao()
-        cityRepository = CityRepositoryImpl(cityApi = cityApi, cityDao = cityDao)
+        weatherApi = FakeWeatherApi()
+        cityRepository =
+            CityRepositoryImpl(cityApi = cityApi, cityDao = cityDao, weatherApi = weatherApi)
     }
 
     @Test
@@ -65,6 +72,13 @@ class CityRepositoryImplTest {
         cityDao.insertAllCities(citiesEntity.map { it.copy(isFavorite = true) })
         val citiesResult = cityRepository.searchFavorites("alb").asSnapshot()
         assertThat(citiesResult).contains(cities.map { it.copy(isFavorite = true) }[1])
+    }
+
+    @Test
+    fun `Get the city weather`() = runTest {
+        val result = cityRepository.getCityWeather(latitude = 19.4285, longitude = -99.1277)
+        assertEquals(weatherResponse.name, result.cityName)
+        assertEquals(weatherResponse.main.humidity, result.weather.humidity)
     }
 
 }
